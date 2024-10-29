@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Centre de Photocopie</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Gestion Centre de Photocopie</h1>
+
+        <!-- Mode en ligne/hors ligne -->
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="onlineModeSwitch">
+            <label class="form-check-label" for="onlineModeSwitch">Mode en ligne</label>
+            <span id="connectionStatus" class="text-muted small"></span>
+        </div>
+
+        <!-- Date Selector -->
+        <div class="date-selector">
+            <h3>Sélectionner la date des opérations</h3>
+            <input type="date" id="operationDate" class="form-control" onchange="changeOperationDate(this.value)">
+        </div>
+
+        <ul class="nav nav-tabs" id="mainTabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-tab="ventes">Ventes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-tab="compteurs">Compteurs</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-tab="stock">Stock</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-tab="bilan">Bilan</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-tab="listes">Listes</a>
+            </li>
+        </ul>
+
+        <div id="ventes" class="tab-content active">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2>Enregistrer une vente</h2>
+                    <form id="venteForm">
+                        <div class="mb-3">
+                            <label class="form-label">Type de service</label>
+                            <select class="form-select" id="typeService" required>
+                                <option value="">Sélectionner...</option>
+                                
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantité</label>
+                            <input type="number" class="form-control" id="quantiteVente" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Prix unitaire (FCFA)</label>
+                            <input type="number" class="form-control" id="prixUnitaire" required min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer la vente</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2>Ventes du jour</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-success"
+                            onclick="exportTableToExcel('ventesTable', 'ventes')">Exporter en Excel</button>
+                        <button class="btn btn-danger" onclick="exportTableToPDF('ventesTable', 'ventes')">Exporter en
+                            PDF</button>
+                        <button class="btn btn-primary" onclick="printTable('ventesTable')">Imprimer</button>
+                    </div>
+                    <table class="table table-bordered" id="ventesTable">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Quantité</th>
+                                <th>Prix unitaire (FCFA)</th>
+                                <th>Total (FCFA)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="compteurs" class="tab-content">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2>Relevé des compteurs</h2>
+                    <form id="compteurForm">
+                        <div class="mb-3">
+                            <label class="form-label">Machine</label>
+                            <select class="form-select" id="machine" required>
+                                <option value="">Sélectionner...</option>
+                                
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Compteur début</label>
+                            <input type="number" class="form-control" id="compteurDebut" required min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Compteur fin</label>
+                            <input type="number" class="form-control" id="compteurFin" required min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer les compteurs</button>
+                    </form>
+
+                    <div class="counter-table">
+                        <h3>Relevés du jour</h3>
+                        <div class="export-buttons">
+                            <button class="btn btn-success"
+                                onclick="exportTableToExcel('compteursTable', 'compteurs')">Exporter en Excel</button>
+                            <button class="btn btn-danger"
+                                onclick="exportTableToPDF('compteursTable', 'compteurs')">Exporter en PDF</button>
+                            <button class="btn btn-primary" onclick="printTable('compteursTable')">Imprimer</button>
+                        </div>
+                        <table class="table table-bordered" id="compteursTable">
+                            <thead>
+                                <tr>
+                                    <th>Machine</th>
+                                    <th>Début</th>
+                                    <th>Fin</th>
+                                    <th>Différence</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Section des avariés -->
+                    <div class="mt-4">
+                        <h3>Enregistrement des avariés</h3>
+                        <form id="avarieForm">
+                            <div class="mb-3">
+                                <label class="form-label">Machine</label>
+                                <select class="form-select" id="machineAvarie" required>
+                                    <option value="">Sélectionner...</option>
+                                    
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nombre d'avariés</label>
+                                <input type="number" class="form-control" id="nombreAvaries" required min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Cause</label>
+                                <textarea class="form-control" id="causeAvarie" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-warning">Enregistrer les avariés</button>
+                        </form>
+
+                        <div class="mt-3">
+                            <h4>Liste des avariés</h4>
+                            <div class="export-buttons">
+                                <button class="btn btn-success"
+                                    onclick="exportTableToExcel('avariesTable', 'avaries')">Exporter en Excel</button>
+                                <button class="btn btn-danger"
+                                    onclick="exportTableToPDF('avariesTable', 'avaries')">Exporter en PDF</button>
+                                <button class="btn btn-primary" onclick="printTable('avariesTable')">Imprimer</button>
+                            </div>
+                            <table class="table table-bordered" id="avariesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Machine</th>
+                                        <th>Nombre</th>
+                                        <th>Cause</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="stock" class="tab-content">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2>Gestion du stock</h2>
+                    <form id="stockForm">
+                        <div class="mb-3">
+                            <label class="form-label">Article</label>
+                            <select class="form-select" id="article" required>
+                                <option value="">Sélectionner...</option>
+                                
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantité</label>
+                            <input type="number" class="form-control" id="quantiteStock" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Prix d'achat (FCFA)</label>
+                            <input type="number" class="form-control" id="prixAchat" required min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter au stock</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2>État du stock</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="exportTableToExcel('stockTable', 'stock')">Exporter en
+                            Excel</button>
+                        <button class="btn btn-danger" onclick="exportTableToPDF('stockTable', 'stock')">Exporter en
+                            PDF</button>
+                        <button class="btn btn-primary" onclick="printTable('stockTable')">Imprimer</button>
+                    </div>
+                    <table class="table table-bordered" id="stockTable">
+                        <thead>
+                            <tr>
+                                <th>Article</th>
+                                <th>Quantité</th>
+                                <th>Valeur (FCFA)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="bilan" class="tab-content">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2>Bilan du jour</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="exportTableToExcel('bilanTable', 'bilan')">Exporter en
+                            Excel</button>
+                        <button class="btn btn-danger" onclick="exportTableToPDF('bilanTable', 'bilan')">Exporter en
+                            PDF</button>
+                        <button class="btn btn-primary" onclick="printAllReports()">Imprimer tout</button>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Chiffre d'affaires: <span id="chiffreAffaires">0 FCFA</span></h3>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Dépenses: <span id="depensesJour">0 FCFA</span></h3>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Bénéfice: <span id="beneficeJour">0 FCFA</span></h3>
+                    </div>
+                    <table class="table table-bordered" id="bilanTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Indicateur</th>
+                                <th>Valeur (FCFA)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Chiffre d'affaires</td>
+                                <td id="caBilan"></td>
+                            </tr>
+                            <tr>
+                                <td>Dépenses</td>
+                                <td id="depensesBilan"></td>
+                            </tr>
+                            <tr>
+                                <td>Bénéfice</td>
+                                <td id="beneficeBilan"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="listes" class="tab-content">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2>Gestion des Listes</h2>
+
+                    <ul class="nav nav-tabs" id="listTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-list="machines">Compteurs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-list="services">Ventes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-list="articles">Stock</a>
+                        </li>
+                    </ul>
+
+                    <div id="machinesList" class="list-content active mt-3">
+                        <h3>Machines</h3>
+                        <form id="machineForm">
+                            <div class="mb-3">
+                                <label class="form-label">Nom de la machine</label>
+                                <input type="text" class="form-control" id="machineName" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ajouter une machine</button>
+                        </form>
+                        <div class="mt-3">
+                            <h4>Liste des machines</h4>
+                            <table class="table table-bordered" id="machinesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nom de la machine</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="servicesList" class="list-content mt-3">
+                        <h3>Types de Services</h3>
+                        <form id="serviceForm">
+                            <div class="mb-3">
+                                <label class="form-label">Nom du service</label>
+                                <input type="text" class="form-control" id="serviceName" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ajouter un service</button>
+                        </form>
+                        <div class="mt-3">
+                            <h4>Liste des services</h4>
+                            <table class="table table-bordered" id="servicesTable">
+                            <thead>
+                                <tr>
+                                    <th>Nom du service</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="articlesList" class="list-content mt-3">
+                    <h3>Articles</h3>
+                    <form id="articleForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nom de l'article</label>
+                            <input type="text" class="form-control" id="articleName" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter un article</button>
+                    </form>
+                    <div class="mt-3">
+                        <h4>Liste des articles</h4>
+                        <table class="table table-bordered" id="articlesTable">
+                            <thead>
+                                <tr>
+                                    <th>Nom de l'article</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+</body>
+
+</html>
