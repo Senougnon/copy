@@ -1,16 +1,40 @@
 /* styles.css */
 
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4; 
+    color: #333; 
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+}
+
+h1, h2, h3, h4 {
+    color: #2980b9; 
+}
+
 .tab-content:not(.active),
 .list-content:not(.active) {
     display: none;
 }
 
 .summary-box {
-    background-color: #f8f9fa;
+    background-color: #e0f7fa;
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
 }
+
+.summary-box:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
 
 .counter-table {
     margin-top: 20px;
@@ -72,16 +96,23 @@
 /* Styles pour les tableaux */
 .table-bordered {
     border: 1px solid #dee2e6;
+    border-collapse: collapse; 
 }
 
 .table-bordered th,
 .table-bordered td {
     border: 1px solid #dee2e6;
-    padding: 8px;
+    padding: 10px;
+    text-align: center;
 }
 
 .table-bordered thead th {
-    background-color: #f8f9fa;
+    background-color: #e9ecef; 
+    color: #343a40; 
+}
+
+.table-bordered tbody tr:nth-child(even) {
+    background-color: #f8f9fa; 
 }
 
 /* Styles pour les formulaires */
@@ -96,27 +127,27 @@
 }
 
 .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #3498db; 
+    border-color: #3498db; 
     color: #fff;
 }
 
 .btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
+    background-color: #2ecc71; 
+    border-color: #2ecc71; 
     color: #fff;
 }
 
 .btn-danger {
-    background-color: #dc3545;
-    border-color: #dc3545;
+    background-color: #e74c3c; 
+    border-color: #e74c3c; 
     color: #fff;
 }
 
 .btn-warning {
-    background-color: #ffc107;
-    border-color: #ffc107;
-    color: #212529;
+    background-color: #f39c12; 
+    border-color: #f39c12; 
+    color: #fff; 
 }
 
 .btn-sm {
@@ -129,9 +160,22 @@
 /* Styles pour les onglets */
 .nav-tabs .nav-link {
     color: #495057;
+    border: 1px solid #dee2e6; 
+    border-radius: 5px 5px 0 0; 
+    margin-right: 5px; 
 }
 
 .nav-tabs .nav-link.active {
-    color: #007bff;
-    border-color: #dee2e6 #dee2e6 #fff;
+    color: #fff; 
+    background-color: #3498db; 
+    border-color: #3498db;
+}
+
+/* Styles pour les messages d'état de la connexion */
+.text-success {
+    color: #2ecc71 !important; 
+}
+
+.text-danger {
+    color: #e74c3c !important; 
 }
